@@ -146,33 +146,29 @@ while running:
     # Clear the actual screen every frame
     screen.fill((10, 10, 20))
     
-    #--------------------------------------------------------------------
+    # ----- Attractor Drawing with Pulsing Effect -----
     pulse_time += dt * 0.01
-    # This creates a value between 0.7 and 1.0 for the size pulse
+    # value between 0.7 and 1.0 for the size pulse
     pulse_scale = 0.85 + math.sin(pulse_time) * 0.15
-    # This creates a value between 100 and 255 for the transparency pulse
+    # value between 200 and 255 for the transparency pulse
     alpha_pulse = 200 + math.sin(pulse_time) * 55
     
     # Clear the attractor surface
     attractor_surface.fill((0, 0, 0, 0))
     
-    # 3. Draw a "Glow" (The transparent edges)
-    # We draw multiple circles with decreasing alpha to create a soft edge
+    # Draw a transparent edges by drawing multiple circles with decreasing alpha to create a soft edge
     glow_radius = int(25 * pulse_scale)
     for r in range(glow_radius, 0, -2):
-        # Calculate alpha for this specific ring (fades outward)
+        # Calculate alpha for this specific ring
         alpha = int((alpha_pulse * (1 - r/glow_radius)) * 0.5)
         pygame.draw.circle(attractor_surface, (255, 255, 0, alpha), (30, 30), r)
 
-    # 4. Draw the core (The solid center)
+    # Draw the solid center
     pygame.draw.circle(attractor_surface, (255, 255, 0, int(alpha_pulse)), (30, 30), int(8 * pulse_scale))
 
-    # 5. Blit (paste) the surface onto the screen at the mouse position
+    # Blit the surface onto the screen at the mouse position
     screen.blit(attractor_surface, (attractor_pos.x - 30, attractor_pos.y - 30))
     # -----------------------------------------------------------------------------
-
-    # Draw Attractor
-    #pygame.draw.circle(screen, YELLOW, (int(attractor_pos.x), int(attractor_pos.y)), 10)
 
     for orb in orbs:
         orb.apply_gravity(attractor_pos, attractor_mass, dt)
