@@ -1,7 +1,7 @@
 import pygame
 import math
 import random
-from config import GRAVITY, COLOR_START, COLOR_END, DISTANCE
+from config import GRAVITY, COLOR_START, COLOR_MIDDLE, COLOR_END, DISTANCE, COLOR_MODE, MAX_SPEED
 from screen_dim import ScreenDim
 import pygame
 
@@ -63,17 +63,24 @@ class Orb:
 
     def draw(self, surface, attractor_pos):
         # Calculate distance to attractor
-        dist = self.pos.distance_to(attractor_pos)
+        if COLOR_MODE == "speed":
+            speed = self.vel.length()
+            max_speed = MAX_SPEED
+            
+            t = min(speed / max_speed, 1.0)
+        elif COLOR_MODE == "distance":
+            dist = self.pos.distance_to(attractor_pos)
+            max_dist = 900
         
-        # Map distance to a 0.0 - 1.0 range (t)
-        # 500 pixels is the "max distance" for the gradient; adjust as needed
-        max_dist = 1500
-        t = min(dist / max_dist, 1.0)
+            # Map distance to a 0.0 - 1.0 range (t)
+            # 500 pixels is the "max distance" for the gradient; adjust as needed
+            t = min(dist / max_dist, 1.0)
         
-        # Map velocity magnitude to a 0.0 - 1.0 range (t_vel)
-        
-        # 3. Update the color based on distance
-        self.color = Orb.lerp_color(COLOR_START, COLOR_END, t)
+        # Add middle color in the gradient (COLOR_MIDDLE)
+        if t <= 0.5:
+            self.color = Orb.lerp_color(COLOR_START, COLOR_MIDDLE, 2 * t)
+        else:
+            self.color = Orb.lerp_color(COLOR_MIDDLE, COLOR_END, 2 * (t - 0.5))
         
         history_len = len(self.history)
         if history_len > 2:
